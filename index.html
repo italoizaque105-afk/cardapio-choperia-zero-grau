@@ -3,94 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Choperia Zero Grau - Cardápio Digital Completo</title>
+    <title>Choperia Zero Grau - Cardápio Digital</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <header>
-        <h1>CHOPERIA ZERO GRAU</h1>
-        <p>Tijuca - Rua Haddock Lobo, 347 | Tel: (21) 3439-0322</p>
-        <div class="header-acoes">
-            <button class="btn-top" onclick="abrirModal('modalNovaCategoria')">📁 Nova Categoria</button>
-            <button class="btn-top" onclick="abrirModal('modalNovoItem')">➕ Cadastrar Novo Item</button>
-            <button class="btn-top" onclick="abrirModal('modalQRCode')">📱 Gerar QR Code da Mesa</button>
-        </div>
+        <h1>🍺 Choperia Zero Grau</h1>
+        <p id="subtituloMesa">Seu cardápio digital na mesa</p>
     </header>
 
-    <!-- NAVEGAÇÃO DE ABAS DINÂMICAS -->
-    <nav class="abas-categorias" id="barraAbas">
-        <!-- As abas serão geradas via JavaScript -->
+    <nav class="tabs" id="menuAba">
+        <button id="btnCliente" class="tab-button active" onclick="mudarAba('cliente')">📋 Cardápio</button>
+        <button id="btnGerente" class="tab-button" onclick="mudarAba('gerente')">🔒 Gerente</button>
     </nav>
 
-    <!-- FILTRO DE DISPONIBILIDADE -->
-    <div class="filtros-status">
-        <button class="btn-filtro active" onclick="filtrarStatus('todos')">Todos os Itens</button>
-        <button class="btn-filtro" onclick="filtrarStatus('disponiveis')">Apenas Disponíveis</button>
-        <button class="btn-filtro" onclick="filtrarStatus('esgotados')">Pausados / Esgotados</button>
-    </div>
-
-    <!-- CONTAINER PRINCIPAL DOS PRODUTOS -->
-    <main class="menu-container" id="containerCategorias">
-        <!-- As seções das categorias serão geradas dinamicamente -->
-    </main>
-
-    <!-- MODAL DE CRIAR NOVA CATEGORIA (ABA) -->
-    <div id="modalNovaCategoria" class="modal">
-        <div class="modal-conteudo">
-            <span class="fechar" onclick="fecharModal('modalNovaCategoria')">&times;</span>
-            <h3>📁 Criar Nova Categoria / Aba</h3>
-            <form id="formNovaCategoria" onsubmit="salvarNovaCategoria(event)">
-                <label>Nome da Nova Categoria:</label>
-                <input type="text" id="nomeNovaCategoria" required placeholder="Ex: Sobremesas Especiais, Combos, etc.">
-
-                <button type="submit" class="btn-salvar">Criar Categoria</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL DE CADASTRAR NOVO ITEM -->
-    <div id="modalNovoItem" class="modal">
-        <div class="modal-conteudo">
-            <span class="fechar" onclick="fecharModal('modalNovoItem')">&times;</span>
-            <h3>➕ Cadastrar Novo Item no Cardápio</h3>
-            <form id="formNovoItem" onsubmit="salvarNovoItem(event)">
-                <label>Nome do Produto:</label>
-                <input type="text" id="novoNome" required placeholder="Ex: Filé Mignon ao Alho">
-                
-                <label>Categoria:</label>
-                <select id="novaCategoria" required>
-                    <!-- As opções serão preenchidas dinamicamente com as abas ativas -->
-                </select>
-
-                <label>Preço (R$):</label>
-                <input type="number" step="0.01" id="novoPreco" required placeholder="29.90">
-
-                <label>Descrição / Acompanhamentos:</label>
-                <input type="text" id="novaDescricao" placeholder="Ex: Acompanha arroz e fritas">
-
-                <button type="submit" class="btn-salvar">Salvar no Cardápio</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL DE QR CODE DA MESA -->
-    <div id="modalQRCode" class="modal">
-        <div class="modal-conteudo text-center">
-            <span class="fechar" onclick="fecharModal('modalQRCode')">&times;</span>
-            <h3>📱 Gerar QR Code de Mesa</h3>
-            <p>Selecione o número da mesa para gerar o código impresso:</p>
-            <input type="number" id="numMesa" value="1" min="1" max="99" onchange="gerarQR()">
-            <div class="qr-container">
-                <img id="imgQRCode" src="" alt="QR Code da Mesa">
+    <main>
+        <!-- ABA CLIENTE (SEMPRE A PRIMEIRA A APARECER) -->
+        <section id="cliente" class="tab-content active">
+            <h2>Nosso Cardápio</h2>
+            <div class="menu-items">
+                <div class="card">
+                    <h3>Chopp Gelado (500ml)</h3>
+                    <p>Chopp trincando de gelado, com colarinho cremoso.</p>
+                    <span class="preco">R$ 12,00</span>
+                </div>
+                <div class="card">
+                    <h3>Porção de Fritas com Queijo</h3>
+                    <p>Batatas crocantes com queijo derretido e bacon.</p>
+                    <span class="preco">R$ 35,00</span>
+                </div>
+                <div class="card">
+                    <h3>Tábua de Frios</h3>
+                    <p>Queijos variados, salame, azeitonas e presunto.</p>
+                    <span class="preco">R$ 48,00</span>
+                </div>
             </div>
-            <button class="btn-salvar" onclick="window.print()">🖨️ Imprimir QR Code</button>
-        </div>
-    </div>
+        </section>
 
-    <footer>
-        <p>Choperia Zero Grau Tijuca - Atendimento Pedidos: <strong>(21) 3439-0322</strong></p>
-    </footer>
+        <!-- ABA GERENTE (PROTEGIDA E ESCONDIDA) -->
+        <section id="gerente" class="tab-content" style="display: none;">
+            <h2>Painel do Gerente</h2>
+            <p>Gere o QR Code para colar nas mesas do estabelecimento:</p>
+            
+            <div class="qr-generator">
+                <label for="numMesa">Número da Mesa:</label>
+                <input type="number" id="numMesa" value="1" min="1" max="99">
+                <button onclick="gerarQR()">Gerar QR Code</button>
+                
+                <div class="qr-result">
+                    <img id="imgQRCode" src="" alt="QR Code da Mesa">
+                </div>
+            </div>
+        </section>
+    </main>
 
     <script src="script.js"></script>
 </body>

@@ -1,36 +1,43 @@
-// Função para alternar entre as abas (com proteção por senha para o Gerente)
+// Função para alternar entre as abas com trava de segurança
 function mudarAba(aba) {
     if (aba === 'gerente') {
         const senha = prompt("Digite a senha de acesso do Gerente:");
         
-        // Verificação da senha (2008)
+        // Verificação da senha 2008
         if (senha !== "2008") { 
             alert("Senha incorreta! Acesso negado.");
-            return; // Bloqueia o acesso se a senha estiver incorreta
+            return; // Interrompe imediatamente se a senha estiver errada
         }
     }
 
-    // Esconde todos os conteúdos de abas e desativa o estado visual dos botões
-    const conteudos = document.querySelectorAll('.tab-content');
-    const botoes = document.querySelectorAll('.tab-button');
-    
-    conteudos.forEach(conteudo => conteudo.classList.remove('active'));
-    botoes.forEach(botao => botao.classList.remove('active'));
+    // Esconde todos os conteúdos
+    const abas = document.querySelectorAll('.tab-content');
+    abas.forEach(conteudo => {
+        conteudo.classList.remove('active');
+        conteudo.style.display = 'none';
+    });
 
-    // Ativa a aba selecionada
-    const abaSelecionada = document.getElementById(aba);
-    if (abaSelecionada) {
-        abaSelecionada.classList.add('active');
+    // Desativa os botões visualmente
+    const botoes = document.querySelectorAll('.tab-button');
+    botoes.forEach(btn => btn.classList.remove('active'));
+
+    // Mostra apenas a aba escolhida
+    const abaAlvo = document.getElementById(aba);
+    if (abaAlvo) {
+        abaAlvo.classList.add('active');
+        abaAlvo.style.display = 'block';
     }
 
-    // Marca o botão correspondente como ativo
-    const botaoAtivo = Array.from(botoes).find(b => b.getAttribute('onclick')?.includes(aba));
-    if (botaoAtivo) {
-        botaoAtivo.classList.add('active');
+    // Ativa o botão selecionado
+    if (aba === 'cliente') {
+        document.getElementById('btnCliente')?.classList.add('active');
+    } else if (aba === 'gerente') {
+        document.getElementById('btnGerente')?.classList.add('active');
+        gerarQR();
     }
 }
 
-// Função para gerar o QR Code da mesa com o teu link oficial
+// Função para gerar o QR Code
 function gerarQR() {
     const campoMesa = document.getElementById('numMesa');
     const mesa = campoMesa ? campoMesa.value || "1" : "1";
@@ -44,13 +51,22 @@ function gerarQR() {
     }
 }
 
-// Executa apenas ao carregar a página
+// Executa assim que o site abre
 document.addEventListener("DOMContentLoaded", () => {
-    // Garante que o site SEMPRE abre na aba do Cliente por padrão
+    // Garante que o cliente começa na aba do cardápio
     mudarAba('cliente');
 
-    // Se estiver na aba do gerente e o botão de gerar QR existir, gera a imagem inicial
-    if (document.getElementById('imgQRCode')) {
-        gerarQR();
+    // Identifica se o cliente abriu pelo QR Code de uma mesa (ex: ?mesa=2)
+    const urlParams = new URLSearchParams(window.location.search);
+    const mesa = urlParams.get('mesa');
+
+    if (mesa) {
+        // Atualiza o subtítulo com o número da mesa do cliente
+        const subtitulo = document.getElementById('subtituloMesa');
+        if (subtitulo) subtitulo.innerText = `Você está na Mesa ${mesa}`;
+        
+        // Esconde o botão do Gerente para o cliente não tentar clicar
+        const btnGerente = document.getElementById('btnGerente');
+        if (btnGerente) btnGerente.style.display = 'none';
     }
 });
